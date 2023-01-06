@@ -2,7 +2,6 @@
 #include "math.h"
 #include <qdebug.h>
 
-
 neuronNetwork::neuronNetwork(int layCount, int* tempArch)
 {
     layersCount = layCount;
@@ -24,19 +23,20 @@ neuronNetwork::neuronNetwork(int layCount, int* tempArch)
 
 void neuronNetwork::matrixMulti(int M, int N, int K, const double *matrixA, const double *matrixB, double *matrixC)
 {
-    for (int i = 0; i < M; i++) {
+    for (int i = 0; i < M; ++i) {
         double* c = matrixC + i * N;
-        for (int j = 0; j < N; j++)
+        for (int j = 0; j < N; ++j)
         {
             c[j] = 0;
         }
-        for (int k = 0; k < K; k++)
+        for (int k = 0; k < K; ++k)
         {
             const double* b = matrixB + k * N;
             float a = matrixA[i * K + k];
-            for (int j = 0; j < N; j++)
+            for (int j = 0; j < N; ++j)
             {
                 c[j] += a * b[j];
+                countOfMM++;
             }
         }
     }
@@ -44,13 +44,13 @@ void neuronNetwork::matrixMulti(int M, int N, int K, const double *matrixA, cons
 
 void neuronNetwork::matrixMultiSumm(int M, int N, int K, const double *matrixA, const double *matrixB, double *matrixC)
 {
-    for (int i = 0; i < M; i++){
+    for (int i = 0; i < M; ++i){
         double* c = matrixC + i * N;
-        for (int k = 0; k < K; k++)
+        for (int k = 0; k < K; ++k)
         {
             const double* b = matrixB + k * N;
             float a = matrixA[i * K + k];
-            for (int j = 0; j < N; j++)
+            for (int j = 0; j < N; ++j)
             {
                 c[j] += a * b[j];
             }
@@ -116,8 +116,8 @@ void neuronNetwork::BackPropogation(double *rightResult, float lr)
     {
         ecounter -= arch[i];
         vcounter -= arch[i - 1];
-
         wcounter -= arch[i] * arch[i - 1];
+
         double* b = new double[arch[i]];
         for (int j = 0; j < arch[i]; j++)
         {
@@ -127,7 +127,6 @@ void neuronNetwork::BackPropogation(double *rightResult, float lr)
         double* c = weights + wcounter;
 
         matrixMultiSumm(arch[i - 1], arch[i], 1, a, b, c);
-
         delete[] b;
     }
 }
@@ -137,7 +136,7 @@ void neuronNetwork::newNetwork()
     long long counter = 0;
     for(int i =0; i < layersCount - 1; i++){
         for(int j = 0; j < (arch[i] * arch[i + 1]); i++){
-            weights[counter] = (double(rand() % 101)/100.0) / arch[i + 1];
+            weights[counter] = (double(rand() % 101)/100.0) / double(arch[i + 1]);
             counter++;
         }
     }
@@ -151,6 +150,6 @@ void neuronNetwork::getPrediction(double *result)
     }
 
     for(int i = 0; i < arch[layersCount-1]; i++){
-        *(result + i)= neuronValues[counter + i];
+        result[i] = neuronValues[counter + i];
     }
 }

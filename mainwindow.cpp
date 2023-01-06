@@ -18,8 +18,8 @@ MainWindow::MainWindow(QWidget *parent)
     pa->setFixedSize(600,600);
     ui->verticalLayout_2->addWidget(pa);
 
-    const int layCount = 4;
-    int arch[layCount] = {576, 800, 16, 10};
+    const int layCount = 3;
+    int arch[layCount] = {24*24, 800, 10};
     nn = new neuronNetwork(layCount, arch);
     nn->newNetwork();
 }
@@ -33,7 +33,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_pushButton_clicked()
 {
     if(ui->lineEdit_2->text() == ""){
-        QMessageBox::warning(this, "Ты долбоеб", "Введи число которое ты нарисовал справа");
+        QMessageBox::warning(this, "Ошибка//", "Введи число которое ты нарисовал справа");
     } else {
         QPixmap pix24 = pa->pixmap_.scaled(QSize(24, 24), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         QImage img = pix24.toImage();
@@ -149,15 +149,11 @@ void MainWindow::on_pushButton_3_clicked()
     double* rightResult = new double[10];
     QSqlQuery query;
 
-    bool showed = false;
+    QElapsedTimer t;
+    t.start();
     for(int i = 0; i < ui->lineEdit_epoch->text().toInt(); i++){
-        query.prepare("SELECT * FROM pictures;");
-        query.exec();
-        int size = 0;
+        query.exec("SELECT * FROM pictures;");
         while(query.next()){
-            if(!showed){
-                size++;
-            }
             for(int i = 0; i < 576; i++){
                 inputData[i] = query.value(i).toDouble();
             }
@@ -167,12 +163,8 @@ void MainWindow::on_pushButton_3_clicked()
             nn->forwardFeed(inputData);
             nn->BackPropogation(rightResult, ui->lineEdit_lr->text().toDouble());
         }
-        if(!showed){
-            qDebug() << "database size = " << size;
-            showed = true;
-        }
     }
-
+    ui->lineEdit_13->setText(QString::number(t.nsecsElapsed()/1000000000.0));
     delete[] inputData;
     delete[] rightResult;
 }

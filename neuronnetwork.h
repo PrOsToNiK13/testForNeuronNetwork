@@ -14,6 +14,8 @@ public:
     double* errors;
     double* weights;
 
+    long long countOfMM = 0;
+
     neuronNetwork(int layCount, int* tempArch);
 
     void matrixMulti(int M, int N, int K, const double* matrixA, const double* matrixB, double* matrixC);

@@ -1,9 +1,5 @@
 #include <QApplication>
 #include <QtSql>
-#include <QPainter>
-#include <QImage>
-#include <QMouseEvent>
-#include <QPaintEvent>
 #include <QWidget>
 #include <mainwindow.h>
 #include "database.h"
